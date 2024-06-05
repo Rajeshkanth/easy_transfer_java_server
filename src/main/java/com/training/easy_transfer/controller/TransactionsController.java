@@ -21,7 +21,7 @@ public class TransactionsController {
     }
 
     @PostMapping("transactionDetails")
-    public ResponseEntity<?> getAllTransactions(@RequestBody Transactions transactions) {
+    public ResponseEntity<TransactionsService.TransactionsResponse> getAllTransactions(@RequestBody Transactions transactions) {
         return transactionsService.getAllTransactions(transactions);
     }
 

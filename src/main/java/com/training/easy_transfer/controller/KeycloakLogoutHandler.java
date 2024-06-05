@@ -32,7 +32,7 @@ public class KeycloakLogoutHandler implements LogoutHandler {
             try {
                 request.logout();
             } catch (ServletException e) {
-                throw new RuntimeException(e);
+                logger.error("logout failed", e);
             }
             return;
         }
@@ -41,7 +41,7 @@ public class KeycloakLogoutHandler implements LogoutHandler {
 
         if (principal instanceof Jwt) {
             logoutWithJwt();
-        } else if (principal instanceof OidcUser){
+        } else if (principal instanceof OidcUser) {
             logoutFromKeycloak((OidcUser) authentication.getPrincipal());
         } else {
             logger.warn("Unsupported authentication type: {}", principal.getClass().getName());

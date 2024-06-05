@@ -3,7 +3,6 @@ package com.training.easy_transfer.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.training.easy_transfer.model.Action;
 import com.training.easy_transfer.model.Transactions;
 import com.training.easy_transfer.service.TransactionsService;
@@ -35,7 +34,8 @@ import java.util.stream.Collectors;
 public class TemplateControllers {
     private final TransactionsService transactionsService;
     private final OAuth2AuthorizedClientService authorizedClientService;
-    private RestTemplate restTemplate;
+    private static final String ERROR_FTL = "error";
+    private final RestTemplate restTemplate;
 
     @Value("${keycloak.introspect-url}")
     private String introspectUrl;
@@ -47,8 +47,8 @@ public class TemplateControllers {
 
 
     @Autowired
-    public TemplateControllers(RestTemplate restTemplate,TransactionsService transactionsService, OAuth2AuthorizedClientService authorizedClientService) {
-        this.restTemplate=restTemplate;
+    public TemplateControllers(RestTemplate restTemplate, TransactionsService transactionsService, OAuth2AuthorizedClientService authorizedClientService) {
+        this.restTemplate = restTemplate;
         this.transactionsService = transactionsService;
         this.authorizedClientService = authorizedClientService;
 
@@ -62,54 +62,56 @@ public class TemplateControllers {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && authorizedClientService != null) {
 
-               OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(
-                       ((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId(),
-                       authentication.getName()
-               );
+            OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(
+                    ((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId(),
+                    authentication.getName()
+            );
 
-               if (client==null){
-                   request.logout();
-                   modelAndView.setViewName("error");
-               }
+            if (client == null) {
+                request.logout();
+                modelAndView.setViewName(ERROR_FTL);
+            }
 
-               try{
-                   String accessToken = client.getAccessToken().getTokenValue();
-                   OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
-                   String mobileNumber = oauth2User.getAttribute("preferred_username");
+            try {
+                assert client != null;
+                String accessToken = client.getAccessToken().getTokenValue();
+                OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
+                String mobileNumber = oauth2User.getAttribute("preferred_username");
 
-                   if (mobileNumber != null) {
-                       List<Transactions> transactions = transactionsService.getTransactionsByMobileNumber(mobileNumber);
-                       List<Transactions> pendingTransactions = transactions.stream()
-                               .filter(transaction -> "pending".equals(transaction.getStatus()))
-                               .collect(Collectors.toList());
-                       modelAndView.addObject("transactions", pendingTransactions);
-                       modelAndView.addObject("mobileNumber", mobileNumber);
-                       modelAndView.addObject("accessToken",accessToken);
-                   }else{
-                       modelAndView.addObject("hasMobileNumber","Mobile number is invalid or not present.");
-                   }
-               }catch (Exception e){
-                   modelAndView.setViewName("error");
-               }
-        }else{
-           modelAndView.setViewName("error");
+                if (mobileNumber != null) {
+                    List<Transactions> transactions = transactionsService.getTransactionsByMobileNumber(mobileNumber);
+                    List<Transactions> pendingTransactions = transactions.stream()
+                            .filter(transaction -> "pending".equals(transaction.getStatus()))
+                            .collect(Collectors.toList());
+                    modelAndView.addObject("transactions", pendingTransactions);
+                    modelAndView.addObject("mobileNumber", mobileNumber);
+                    modelAndView.addObject("accessToken", accessToken);
+                } else {
+                    modelAndView.addObject("hasMobileNumber", "Mobile number is invalid or not present.");
+                }
+            } catch (Exception e) {
+                modelAndView.setViewName(ERROR_FTL);
+            }
+        } else {
+            modelAndView.setViewName(ERROR_FTL);
         }
         return modelAndView;
     }
 
 
     @PostMapping("/api/transaction/pending/{mobileNumber}")
-    public ResponseEntity<String> newAlert(@PathVariable String mobileNumber, JwtAuthenticationToken authenticationToken,HttpServletRequest request) throws JsonProcessingException, ServletException {
+    public ResponseEntity<String> newAlert(@PathVariable String mobileNumber, JwtAuthenticationToken authenticationToken, HttpServletRequest request) throws JsonProcessingException, ServletException {
 
         String accessToken = authenticationToken.getToken().getTokenValue();
 
         ResponseEntity<String> introspectionResponse = introspectToken(accessToken);
-        ObjectMapper objectMapper=new ObjectMapper();
-        Map<String, Object> responseBodyMap = objectMapper.readValue(introspectionResponse.getBody(), new TypeReference<Map<String, Object>>() {});
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> responseBodyMap = objectMapper.readValue(introspectionResponse.getBody(), new TypeReference<Map<String, Object>>() {
+        });
 
         Boolean isActive = (Boolean) responseBodyMap.get("active");
 
-        if(isActive==null || !isActive){
+        if (isActive == null || !isActive) {
             request.logout();
             SecurityContextHolder.clearContext();
 
@@ -128,14 +130,14 @@ public class TemplateControllers {
     }
 
     @GetMapping("/success")
-    public ModelAndView successPage(){
+    public ModelAndView successPage() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("success");
-        return  modelAndView;
+        return modelAndView;
     }
 
     @GetMapping("/canceled")
-    public ModelAndView canceledPage(){
+    public ModelAndView canceledPage() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("canceled");
         return modelAndView;
@@ -143,9 +145,9 @@ public class TemplateControllers {
 
     @PostMapping("/api/transaction/confirm")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<String> confirmPayment(@RequestBody Action request ) {
+    public ResponseEntity<String> confirmPayment(@RequestBody Action request) {
         String action = request.getStatus();
-        Long id =request.getId();
+        Long id = request.getId();
         Optional<Transactions> optionalTransaction = transactionsService.findById(id);
 
         if (optionalTransaction.isEmpty()) {
@@ -154,14 +156,14 @@ public class TemplateControllers {
 
         Transactions transaction = optionalTransaction.get();
 
-        if(action.equalsIgnoreCase("confirm")){
+        if (action.equalsIgnoreCase("confirm")) {
             transaction.setStatus("confirmed");
             transactionsService.saveTransaction(transaction);
             return ResponseEntity.ok("Payment confirmed successfully");
-        }else if(action.equalsIgnoreCase("cancel")){
+        } else if (action.equalsIgnoreCase("cancel")) {
             transaction.setStatus("canceled");
             transactionsService.saveTransaction(transaction);
-            return  ResponseEntity.status(HttpStatus.CREATED).build();
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         }
 
         return ResponseEntity.badRequest().body("Invalid request");
@@ -184,15 +186,15 @@ public class TemplateControllers {
         );
     }
 
-   @PostMapping("/logout")
+    @PostMapping("/logout")
     public String logout(@RequestParam String logoutToken) {
-       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-       if (authentication instanceof OAuth2AuthenticationToken) {
-           // Invalidate session for OAuth2 user
-           SecurityContextHolder.clearContext();
-           return "Logout successful";
-       }
-       return "Logout not supported for this user";
-   }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof OAuth2AuthenticationToken) {
+            // Invalidate session for OAuth2 user
+            SecurityContextHolder.clearContext();
+            return "Logout successful";
+        }
+        return "Logout not supported for this user";
+    }
 
 }

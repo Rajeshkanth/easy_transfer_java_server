@@ -4,7 +4,6 @@ import com.training.easy_transfer.model.Transactions;
 import com.training.easy_transfer.model.User;
 import com.training.easy_transfer.repository.TransactionsRepo;
 import com.training.easy_transfer.repository.UserRepository;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +18,14 @@ import java.util.Optional;
 @Service
 public class TransactionsService {
 
-
     private final TransactionsRepo transactionsRepository;
 
     private final UserRepository userRepository;
+
     @Autowired
-    public TransactionsService(UserRepository userRepository,TransactionsRepo transactionsRepository){
-        this.transactionsRepository=transactionsRepository;
-        this.userRepository=userRepository;
+    public TransactionsService(UserRepository userRepository, TransactionsRepo transactionsRepository) {
+        this.transactionsRepository = transactionsRepository;
+        this.userRepository = userRepository;
     }
 
     public List<Transactions> getTransactionsByMobileNumber(String mobileNumber) {
@@ -46,7 +45,7 @@ public class TransactionsService {
     }
 
     public List<Transactions> checkForPendingTransactions(String mobileNumber) {
-         List<Transactions> transactions= transactionsRepository.findByMobileNumber(mobileNumber);
+        List<Transactions> transactions = transactionsRepository.findByMobileNumber(mobileNumber);
 
         List<Transactions> pendingTransactions = new ArrayList<>();
         for (Transactions transaction : transactions) {
@@ -54,7 +53,7 @@ public class TransactionsService {
                 pendingTransactions.add(transaction);
             }
         }
-        return  pendingTransactions;
+        return pendingTransactions;
     }
 
     public void saveTransaction(Transactions transaction) {
@@ -63,7 +62,7 @@ public class TransactionsService {
 
     @Setter
     @Getter
-    private static class TransactionsResponse {
+    public static class TransactionsResponse {
         private List<Transactions> transactions;
         private long totalTransactions;
 
@@ -73,21 +72,22 @@ public class TransactionsService {
         }
     }
 
-    public ResponseEntity<?> getAllTransactions(Transactions transactions) {
+    public ResponseEntity<TransactionsResponse> getAllTransactions(Transactions transactions) {
         List<Transactions> userTransactions = transactionsRepository.findByUserMobileNumber(transactions.getMobileNumber());
         long totalTransactions = transactionsRepository.countByUserMobileNumber(transactions.getMobileNumber());
         TransactionsResponse transactionsResponse = new TransactionsResponse(userTransactions, totalTransactions);
         return ResponseEntity.ok(transactionsResponse);
     }
 
-    public ResponseEntity<?> processPaymentAlert(Transactions newReceiver, String mobileNumber) {
+    public void processPaymentAlert(Transactions newReceiver, String mobileNumber) {
         User user = userRepository.findByMobileNumber(mobileNumber);
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return; // user not found
         }
         newReceiver.setUser(user);
         Transactions savedTransaction = transactionsRepository.save(newReceiver);
-        return ResponseEntity.ok(savedTransaction);
+        ResponseEntity.ok(savedTransaction);
     }
 
 }

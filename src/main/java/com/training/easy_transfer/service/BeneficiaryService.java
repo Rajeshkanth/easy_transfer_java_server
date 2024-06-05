@@ -1,9 +1,8 @@
 package com.training.easy_transfer.service;
+
 import com.training.easy_transfer.model.SavedAccount;
-import com.training.easy_transfer.model.Transactions;
 import com.training.easy_transfer.model.User;
 import com.training.easy_transfer.repository.BeneficiaryRepo;
-import com.training.easy_transfer.repository.TransactionsRepo;
 import com.training.easy_transfer.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,9 +18,9 @@ public class BeneficiaryService {
     private final UserRepository userRepository;
 
     @Autowired
-    public BeneficiaryService(BeneficiaryRepo beneficiaryRepo, UserRepository userRepository){
-        this.userRepository=userRepository;
-        this.beneficiaryRepo=beneficiaryRepo;
+    public BeneficiaryService(BeneficiaryRepo beneficiaryRepo, UserRepository userRepository) {
+        this.userRepository = userRepository;
+        this.beneficiaryRepo = beneficiaryRepo;
 
     }
 
@@ -45,7 +44,7 @@ public class BeneficiaryService {
         return ResponseEntity.ok(saved);
     }
 
-    public ResponseEntity<?> getAllSavedAccounts(SavedAccount savedAccount) {
+    public ResponseEntity<List<SavedAccount>> getAllSavedAccounts(SavedAccount savedAccount) {
 
         User user = userRepository.findByMobileNumber(savedAccount.getMobileNumber());
 
@@ -54,44 +53,44 @@ public class BeneficiaryService {
         }
 
         List<SavedAccount> savedAccounts = beneficiaryRepo.findByUser(user);
-        return ResponseEntity.ok( savedAccounts);
+        return ResponseEntity.ok(savedAccounts);
     }
 
     public ResponseEntity<User> getUserName(String mobileNumber) {
         User user = userRepository.findByMobileNumber(mobileNumber);
-        if(user != null){
+        if (user != null) {
             return ResponseEntity.ok(user);
-        }else{
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
 
-    public ResponseEntity<User> updateUserDetailsByMobileNumber(String mobileNumber,User userDetails) {
-       User user= userRepository.findByMobileNumber(mobileNumber);
-       if(user != null){
-           user.setUserName(userDetails.getUserName());
-           user.setAge(userDetails.getAge());
-           user.setAccNum(userDetails.getAccNum());
-           user.setCard(userDetails.getCard());
-           user.setCvv(userDetails.getCvv());
-           user.setDob(userDetails.getDob());
-           user.setExpireDate(userDetails.getExpireDate());
+    public ResponseEntity<User> updateUserDetailsByMobileNumber(String mobileNumber, User userDetails) {
+        User user = userRepository.findByMobileNumber(mobileNumber);
+        if (user != null) {
+            user.setUserName(userDetails.getUserName());
+            user.setAge(userDetails.getAge());
+            user.setAccNum(userDetails.getAccNum());
+            user.setCard(userDetails.getCard());
+            user.setCvv(userDetails.getCvv());
+            user.setDob(userDetails.getDob());
+            user.setExpireDate(userDetails.getExpireDate());
 
-           userRepository.save(user);
-           return ResponseEntity.ok(user);
-       }else{
-           return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build(); // user not found
-       }
+            userRepository.save(user);
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build(); // user not found
+        }
     }
 
     public ResponseEntity<String> deleteSavedBeneficiaryAccount(String mobileNumber, String accountNumber) {
 
         User user = userRepository.findByMobileNumber(mobileNumber);
-        if(user ==null){
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // user not found
         }
-        SavedAccount accountToDelete= beneficiaryRepo.findByAccountNumber(accountNumber);
-        if(accountToDelete == null){
+        SavedAccount accountToDelete = beneficiaryRepo.findByAccountNumber(accountNumber);
+        if (accountToDelete == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         beneficiaryRepo.delete(accountToDelete);

@@ -19,7 +19,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig  {
+class SecurityConfig {
 
     private final KeycloakLogoutHandler keycloakLogoutHandler;
 
@@ -64,7 +64,6 @@ class SecurityConfig  {
 
         return http.build();
     }
-
 
 
 }

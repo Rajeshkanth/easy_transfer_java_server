@@ -15,17 +15,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+
     @Autowired
-    public UserController(UserService userService){
-        this.userService=userService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @PostMapping("signUp")
     public ResponseEntity<String> registerUser(@RequestBody User user) {
         String response = userService.registerUser(user.getMobileNumber(), user.getPassword());
-        return switch (response){
-            case "user added"->ResponseEntity.ok("registration successful");
-            case "user already"->ResponseEntity.status(HttpStatus.CREATED).build();
+        return switch (response) {
+            case "user added" -> ResponseEntity.ok("registration successful");
+            case "user already" -> ResponseEntity.status(HttpStatus.CREATED).build();
             default -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error");
         };
     }
