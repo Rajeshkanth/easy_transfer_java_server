@@ -9,10 +9,10 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Data
-@Entity
+
 @Getter
 @Setter
+@Entity
 @Table(name = "transactions")
 public class Transactions {
     @Id

@@ -1,6 +1,5 @@
 package com.training.easy_transfer.controller;
 
-import com.training.easy_transfer.model.Action;
 import com.training.easy_transfer.model.PaymentAlertRequest;
 import com.training.easy_transfer.model.Transactions;
 import com.training.easy_transfer.service.TransactionsService;
@@ -27,8 +26,8 @@ public class TransactionsController {
     }
 
     @PostMapping("fromPaymentAlert")
-    public ResponseEntity<String> processPaymentAlert(@RequestBody PaymentAlertRequest request, Action requestAction) {
-        transactionsService.processPaymentAlert( request.getNewTransaction(), request.getMobileNumber(),requestAction);
+    public ResponseEntity<String> processPaymentAlert(@RequestBody PaymentAlertRequest request) {
+        transactionsService.processPaymentAlert( request.getNewTransaction(), request.getMobileNumber());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

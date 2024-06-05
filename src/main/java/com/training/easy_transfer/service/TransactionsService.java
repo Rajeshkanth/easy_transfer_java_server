@@ -4,6 +4,9 @@ import com.training.easy_transfer.model.Transactions;
 import com.training.easy_transfer.model.User;
 import com.training.easy_transfer.repository.TransactionsRepo;
 import com.training.easy_transfer.repository.UserRepository;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,28 +61,14 @@ public class TransactionsService {
         transactionsRepository.save(transaction);
     }
 
+    @Setter
+    @Getter
     private static class TransactionsResponse {
         private List<Transactions> transactions;
         private long totalTransactions;
 
         public TransactionsResponse(List<Transactions> transactions, long totalTransactions) {
             this.transactions = transactions;
-            this.totalTransactions = totalTransactions;
-        }
-
-        public List<Transactions> getTransactions() {
-            return transactions;
-        }
-
-        public void setTransactions(List<Transactions> transactions) {
-            this.transactions = transactions;
-        }
-
-        public long getTotalTransactions() {
-            return totalTransactions;
-        }
-
-        public void setTotalTransactions(long totalTransactions) {
             this.totalTransactions = totalTransactions;
         }
     }

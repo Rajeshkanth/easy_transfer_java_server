@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login Page</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-   <#include "css/style.css" />
-</head>
+<#import "header.ftl" as macros />
+<@macros.header title="Payment Success" css=["https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"] includeCss="css/style.css"/>
+
 <body>
   <div class="font-poppins m-0 bg-green-300 h-screen w-screen flex flex-col items-center justify-center">
     <div class="wrapper h-36 w-screen flex justify-center items-center bg-green-300">
@@ -19,10 +14,9 @@
   </div>
 
   <script>
-    const mobileNumber ="${mobileNumber}";
 
     setTimeout(() => {
-        window.location.href = "/home/"+mobileNumber;
+        window.location.href = "/";
     }, 3000);
 
   </script>

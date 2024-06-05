@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.logging.Logger;
+
 @RestController
 @RequestMapping("/api/user/")
 public class BeneficiaryController {
@@ -35,6 +37,11 @@ public class BeneficiaryController {
     @PostMapping("updateProfile")
     public ResponseEntity<User> updateProfileDetails(@RequestBody User user){
         return beneficiaryService.updateUserDetailsByMobileNumber(user.getMobileNumber(),user);
+    }
+
+    @PostMapping("removeBeneficiary")
+    public  ResponseEntity<String> removeSavedBeneficiaryAccount(@RequestBody SavedAccount savedAccount){
+        return beneficiaryService.deleteSavedBeneficiaryAccount(savedAccount.getMobileNumber(), savedAccount.getAccountNumber());
     }
 
 }

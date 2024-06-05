@@ -1,7 +1,9 @@
 package com.training.easy_transfer.service;
 import com.training.easy_transfer.model.SavedAccount;
+import com.training.easy_transfer.model.Transactions;
 import com.training.easy_transfer.model.User;
 import com.training.easy_transfer.repository.BeneficiaryRepo;
+import com.training.easy_transfer.repository.TransactionsRepo;
 import com.training.easy_transfer.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,12 +15,14 @@ import java.util.List;
 @Service
 public class BeneficiaryService {
 
-    public final BeneficiaryRepo beneficiaryRepo;
-    public final UserRepository userRepository;
+    private final BeneficiaryRepo beneficiaryRepo;
+    private final UserRepository userRepository;
+
     @Autowired
     public BeneficiaryService(BeneficiaryRepo beneficiaryRepo, UserRepository userRepository){
         this.userRepository=userRepository;
         this.beneficiaryRepo=beneficiaryRepo;
+
     }
 
     public ResponseEntity<SavedAccount> addAndRetrieveBeneficiary(SavedAccount savedAccount) {
@@ -26,7 +30,7 @@ public class BeneficiaryService {
         User user = userRepository.findByMobileNumber(savedAccount.getMobileNumber());
 
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // user not found
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         savedAccount.setUser(user);
 
@@ -58,7 +62,7 @@ public class BeneficiaryService {
         if(user != null){
             return ResponseEntity.ok(user);
         }else{
-                return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -79,6 +83,21 @@ public class BeneficiaryService {
            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build(); // user not found
        }
     }
+
+    public ResponseEntity<String> deleteSavedBeneficiaryAccount(String mobileNumber, String accountNumber) {
+
+        User user = userRepository.findByMobileNumber(mobileNumber);
+        if(user ==null){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // user not found
+        }
+        SavedAccount accountToDelete= beneficiaryRepo.findByAccountNumber(accountNumber);
+        if(accountToDelete == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        beneficiaryRepo.delete(accountToDelete);
+        return ResponseEntity.ok("account removed successfully");
+    }
+
 }
 
 

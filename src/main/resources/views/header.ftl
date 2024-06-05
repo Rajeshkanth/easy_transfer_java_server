@@ -1,24 +1,15 @@
+<#macro header title, css, includeCss="">
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="UTF-8">
     <title>${title}</title>
-    <link
-      rel="shortcut icon"
-      href="./assets/images/favicon.ico"
-      type="image/x-icon"
-    />
-
-    <#list linkTags as tag>
-    <link href="${tag.href}" rel="${tag.rel}" />
+    <#list css as cssLink>
+        <link href="${cssLink}" rel="stylesheet">
     </#list>
 
-    <#if scriptTags??>
-    <#list scriptTags as tag>
-    <script src="${tag.src}"></script>
-    </#list>
+    <#if includeCss?has_content >
+        <#include includeCss />
     </#if>
-  </head>
-</html>
+</head>
+</#macro>

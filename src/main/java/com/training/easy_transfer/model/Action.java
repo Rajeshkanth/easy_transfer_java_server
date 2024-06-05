@@ -1,5 +1,12 @@
 package com.training.easy_transfer.model;
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+
+@Getter
+@Setter
 public class Action {
     private String status;
     private String mobileNumber;

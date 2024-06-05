@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login Page</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <#include "css/canceled.css">
-</head>
+<#import "header.ftl" as macros />
+<@macros.header title="Payment Canceled" css=["https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"] includeCss="css/canceled.css"/>
+
 <body>
     <div
       class="font-poppins bg-green-200 h-screen w-screen flex flex-col items-center justify-center"
@@ -23,10 +18,9 @@
     </div>
 
     <script>
-      const mobileNumber = "${mobileNumber}";
 
       setTimeout(() => {
-        window.location.href = "/home/"+mobileNumber;
+        window.location.href = "/";
       }, 3000);
     </script>
   </body>
