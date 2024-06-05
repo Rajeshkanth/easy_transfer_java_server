@@ -16,7 +16,7 @@ public class TransactionsController {
 
 
     @Autowired
-    public  TransactionsController(TransactionsService transactionsService){
+    public TransactionsController(TransactionsService transactionsService) {
         this.transactionsService = transactionsService;
     }
 
@@ -27,12 +27,12 @@ public class TransactionsController {
 
     @PostMapping("fromPaymentAlert")
     public ResponseEntity<String> processPaymentAlert(@RequestBody PaymentAlertRequest request) {
-        transactionsService.processPaymentAlert( request.getNewTransaction(), request.getMobileNumber());
+        transactionsService.processPaymentAlert(request.getNewTransaction(), request.getMobileNumber());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("transactionStatus/{uid}")
-    public ResponseEntity<String > sendTransactionStatus(@PathVariable String uid){
+    public ResponseEntity<String> sendTransactionStatus(@PathVariable String uid) {
         String status = transactionsService.checkTransactionStatusByUID(uid);
         if (status.equals("confirmed")) {
             return ResponseEntity.ok("Transaction Confirmed");

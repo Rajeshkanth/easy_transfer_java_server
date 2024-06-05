@@ -42,12 +42,12 @@ public class Transactions {
     private String accountNumber;
 
     @Column(nullable = false)
-    private  String ifsc;
+    private String ifsc;
 
     @Column(nullable = false)
     private String tabId;
 
     @Column(nullable = false)
-    private  String uid;
+    private String uid;
 
 }
