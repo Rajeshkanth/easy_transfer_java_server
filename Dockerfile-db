@@ -1,0 +1,9 @@
+# Use the official PostgreSQL image from the Docker Hub
+FROM postgres:14.2
+
+# Copy the database dump file into the container
+COPY et_backup.dump /docker-entrypoint-initdb.d/
+
+# Copy the postgresql.conf file to customize the PostgreSQL configuration
+# (optional, only if you have custom configurations)
+#COPY postgresql.conf /etc/postgresql/postgresql.conf

@@ -1,0 +1,121 @@
+2024-06-18 11:32:13.331 IST [2939] LOG:  starting PostgreSQL 14.12 (Homebrew) on x86_64-apple-darwin22.6.0, compiled by Apple clang version 15.0.0 (clang-1500.1.0.2.5), 64-bit
+2024-06-18 11:32:13.334 IST [2939] LOG:  listening on IPv6 address "::1", port 5432
+2024-06-18 11:32:13.334 IST [2939] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-06-18 11:32:13.335 IST [2939] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2024-06-18 11:32:13.339 IST [2940] LOG:  database system was shut down at 2024-06-18 11:31:50 IST
+2024-06-18 11:32:13.345 IST [2939] LOG:  database system is ready to accept connections
+2024-06-18 11:32:26.210 IST [2951] FATAL:  database "rajesh" does not exist
+2024-06-18 13:26:05.712 IST [6268] FATAL:  role "postgres" does not exist
+2024-06-18 13:26:21.143 IST [6282] ERROR:  relation "saved_accounts" already exists
+2024-06-18 13:26:21.143 IST [6282] STATEMENT:  CREATE TABLE public.saved_accounts (
+	    id bigint NOT NULL,
+	    user_id bigint NOT NULL,
+	    beneficiary_name character varying(255) NOT NULL,
+	    acc_num character varying(255) NOT NULL,
+	    ifsc character varying(255) NOT NULL,
+	    mobile_number character varying(255)
+	);
+	
+	
+	
+2024-06-18 13:26:21.152 IST [6282] ERROR:  relation "saved_accounts_id_seq" already exists
+2024-06-18 13:26:21.152 IST [6282] STATEMENT:  CREATE SEQUENCE public.saved_accounts_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1;
+	
+	
+	
+2024-06-18 13:26:21.163 IST [6282] ERROR:  relation "transactions" already exists
+2024-06-18 13:26:21.163 IST [6282] STATEMENT:  CREATE TABLE public.transactions (
+	    id bigint NOT NULL,
+	    account_number character varying(255) NOT NULL,
+	    amount numeric(38,2) NOT NULL,
+	    date date NOT NULL,
+	    mobile_number character varying(255) NOT NULL,
+	    name character varying(255) NOT NULL,
+	    status character varying(255) NOT NULL,
+	    user_id bigint NOT NULL,
+	    ifsc character varying(255) NOT NULL,
+	    tab_id character varying(255) NOT NULL,
+	    uid character varying(255) NOT NULL
+	);
+	
+	
+	
+2024-06-18 13:26:21.164 IST [6282] ERROR:  relation "transactions_id_seq" already exists
+2024-06-18 13:26:21.164 IST [6282] STATEMENT:  CREATE SEQUENCE public.transactions_id_seq
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1;
+	
+	
+	
+2024-06-18 13:26:21.166 IST [6282] ERROR:  relation "users" already exists
+2024-06-18 13:26:21.166 IST [6282] STATEMENT:  CREATE TABLE public.users (
+	    id bigint NOT NULL,
+	    mobile_number character varying(255) NOT NULL,
+	    password character varying(255) NOT NULL,
+	    user_name character varying(255),
+	    age integer,
+	    dob date,
+	    acc_num character varying(255),
+	    card character varying(255),
+	    cvv character varying(255),
+	    expire_date character varying(255)
+	);
+	
+	
+	
+2024-06-18 13:26:21.166 IST [6282] ERROR:  relation "users_id_seq" already exists
+2024-06-18 13:26:21.166 IST [6282] STATEMENT:  CREATE SEQUENCE public.users_id_seq
+	    AS integer
+	    START WITH 1
+	    INCREMENT BY 1
+	    NO MINVALUE
+	    NO MAXVALUE
+	    CACHE 1;
+	
+	
+	
+2024-06-18 13:26:21.192 IST [6282] ERROR:  insert or update on table "saved_accounts" violates foreign key constraint "fkihnutgxg5o6g7jingq9qmr9ot"
+2024-06-18 13:26:21.192 IST [6282] DETAIL:  Key (user_id)=(1) is not present in table "users".
+2024-06-18 13:26:21.192 IST [6282] STATEMENT:  COPY public.saved_accounts (id, user_id, beneficiary_name, acc_num, ifsc, mobile_number) FROM stdin;
+	
+2024-06-18 13:26:21.195 IST [6282] ERROR:  insert or update on table "transactions" violates foreign key constraint "fkqwv7rmvc8va8rep7piikrojds"
+2024-06-18 13:26:21.195 IST [6282] DETAIL:  Key (user_id)=(1) is not present in table "users".
+2024-06-18 13:26:21.195 IST [6282] STATEMENT:  COPY public.transactions (id, account_number, amount, date, mobile_number, name, status, user_id, ifsc, tab_id, uid) FROM stdin;
+	
+2024-06-18 13:26:21.213 IST [6282] ERROR:  multiple primary keys for table "saved_accounts" are not allowed
+2024-06-18 13:26:21.213 IST [6282] STATEMENT:  ALTER TABLE ONLY public.saved_accounts
+	    ADD CONSTRAINT saved_accounts_pkey PRIMARY KEY (id);
+	
+	
+	
+2024-06-18 13:26:21.213 IST [6282] ERROR:  multiple primary keys for table "transactions" are not allowed
+2024-06-18 13:26:21.213 IST [6282] STATEMENT:  ALTER TABLE ONLY public.transactions
+	    ADD CONSTRAINT transactions_pkey PRIMARY KEY (id);
+	
+	
+	
+2024-06-18 13:26:21.214 IST [6282] ERROR:  multiple primary keys for table "users" are not allowed
+2024-06-18 13:26:21.214 IST [6282] STATEMENT:  ALTER TABLE ONLY public.users
+	    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+	
+	
+	
+2024-06-18 13:26:21.219 IST [6282] ERROR:  constraint "fkqwv7rmvc8va8rep7piikrojds" for relation "transactions" already exists
+2024-06-18 13:26:21.219 IST [6282] STATEMENT:  ALTER TABLE ONLY public.transactions
+	    ADD CONSTRAINT fkqwv7rmvc8va8rep7piikrojds FOREIGN KEY (user_id) REFERENCES public.users(id);
+	
+	
+	
+2024-06-18 13:29:09.469 IST [6332] ERROR:  duplicate key value violates unique constraint "users_pkey"
+2024-06-18 13:29:09.469 IST [6332] DETAIL:  Key (id)=(3) already exists.
+2024-06-18 13:29:09.469 IST [6332] CONTEXT:  COPY users, line 1
+2024-06-18 13:29:09.469 IST [6332] STATEMENT:  COPY public.users (id, mobile_number, password, user_name, age, dob, acc_num, card, cvv, expire_date) FROM stdin;
+	

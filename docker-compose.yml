@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  db:
+    image: et-db
+    container_name: et-postgres-container
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: rajesh
+      POSTGRES_PASSWORD: 0923
+      POSTGRES_DB: postgres
+    volumes:
+      - ./et_backup.dump:/docker-entrypoint-initdb.d/et_backup.dump
+    networks:
+      - easy_transfer_network
+
+  keycloak:
+    image: kc-image
+    container_name: keycloak-container
+    ports:
+      - "8180:8180"
+#      - "8443:8443"
+    #    environment:
+    #      KEYCLOAK_ADMIN: rocky
+    #      KEYCLOAK_ADMIN_PASSWORD: rocky
+    #      KEYCLOAK_IMPORT: /opt/keycloak/data/import
+    volumes:
+#       - keycloak-data:/opt/keycloak/data
+      - /Users/rajesh/Downloads/IAM/export:/opt/keycloak/data/import
+    depends_on:
+      - db
+    networks:
+      - easy_transfer_network
+
+  app:
+    image: et-app
+    container_name: et-app-container
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - keycloak
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
+      SPRING_DATASOURCE_USERNAME: rajesh
+      SPRING_DATASOURCE_PASSWORD: 0923
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_ISSUER_URI: http://keycloak:8180/realms/easy_transfer_realm
+      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_ID: ftl-login
+      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KEYCLOAK_CLIENT_SECRET: DWPPngoxaQwH3S9AjNBd5xvWiq5OvWpl
+    networks:
+      - easy_transfer_network
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx-container
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+     - app
+     - keycloak
+    networks:
+      - easy_transfer_network
+
+
+networks:
+  easy_transfer_network:
+    driver: bridge
